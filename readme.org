@@ -1,3 +1,17 @@
 * Kan Extensions
 + messing around with some examples from Milewski, chap. 24 and John
   Wiegley's 2020 Haskell Love talk
++ using =cabal= with an ancient-ass version of =ghc= to get
+  =parsec-free= to work; AWKWARD
++ for the record:
+  #+begin_example
+    > ghcup list | grep -i "✔✔"
+    [ Warn  ] New GHCup version available: 0.1.50.2. To upgrade, run 'ghcup upgrade'
+    [ Warn  ] New ghc version available. If you want to install this latest version, run 'ghcup install ghc 9.12.2'
+    [ Warn  ] New hls version available. If you want to install this latest version, run 'ghcup install hls 2.12.0.0'
+    ✔✔ ghc   9.4.8       base-4.17.2.1             hls-powered           
+    ✔✔ cabal 3.10.3.0                                                    
+    ✔✔ hls   2.9.0.1                                                     
+    ✔✔ stack 3.7.1       latest                                          
+    ✔✔ ghcup 0.1.50.1                              stray                 
+  #+end_example
