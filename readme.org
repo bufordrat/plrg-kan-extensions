@@ -1,0 +1,3 @@
+* Kan Extensions
++ messing around with some examples from Milewski, chap. 24 and John
+  Wiegley's 2020 Haskell Love talk
