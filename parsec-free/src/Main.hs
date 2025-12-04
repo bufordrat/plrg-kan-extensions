@@ -1,5 +1,3 @@
-{-# LANGUAGE RankNTypes #-}
-
 module Main (main) where
 
 import Text.Parsec hiding
@@ -30,7 +28,6 @@ type Parser a = ParsecT String () (ReaderT LogType IO) a
 
 main :: IO ()
 main = pure ()
-
 
 -- our old friend, the JSON ADT
 data JSON
