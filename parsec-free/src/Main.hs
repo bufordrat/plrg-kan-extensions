@@ -29,6 +29,14 @@ type Parser a = ParsecT String () (ReaderT LogType IO) a
 main :: IO ()
 main = pure ()
 
+data Expression =
+  = Literal Int
+  | Add Expression Expression
+  | Multiply Expression Expression
+
+intP :: Parser Int
+intP = many1 (satisfy isDigit)
+
 -- our old friend, the JSON ADT
 data JSON
   = JNull
