@@ -1,0 +1,63 @@
+name:                subwords
+version:             0.1.0.0
+
+extra-source-files:
+- README.md
+
+description:         subwords
+
+ghc-options:
+- -Wall
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wno-unused-top-binds
+- -Wno-unused-local-binds
+- -Wno-unused-pattern-binds
+- -Wno-unused-matches
+- -Wno-missing-signatures
+- -Wno-type-defaults
+- -Wno-compat-unqualified-imports
+- -Wno-name-shadowing
+- -fdefer-typed-holes
+
+language: GHC2024
+
+default-extensions:
+- InstanceSigs
+- NamedFieldPuns
+
+dependencies:
+- base >= 4.7 && < 5
+- containers
+
+library:
+  source-dirs: src
+
+executables:
+  subwords-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - subwords
+    when:
+    - condition: false
+      other-modules: Paths_subwords
+
+tests:
+  subwords-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - subwords
+    - hspec
+    - hspec-discover
+    - QuickCheck
+

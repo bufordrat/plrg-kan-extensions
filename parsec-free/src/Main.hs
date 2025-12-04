@@ -3,19 +3,21 @@ module Main (main) where
 import Data.Tree
 import Data.Char
 import Control.Monad.Reader
+import Text.Parsec
+import Text.Parsec.Free.Log (LogType)
 
 type Parser a = ParsecT String () (ReaderT LogType IO) a
 
 main :: IO ()
 main = pure ()
 
-data Expression =
+data Expression 
   = Literal Int
   | Add Expression Expression
   | Multiply Expression Expression
 
-intP :: Parser Int
-intP = many1 (satisfy isDigit)
+-- intP :: Parser Int
+-- intP = many1 (satisfy isDigit)
 
 
 -- our old friend, the JSON ADT
