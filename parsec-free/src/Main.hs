@@ -1,27 +1,7 @@
 module Main (main) where
 
-import Text.Parsec hiding
-  ( parse
-  , choice
-  , (<|>)
-  , char
-  , string
-  , satisfy
-  , eof
-  , parserFail
-  , sepBy
-  , sepBy1
-  , many
-  , many1
-  )
-import Text.Parsec
-import Text.Parsec.Free.Log
--- import Text.Parsec.String (Parser)
-
 import Data.Tree
 import Data.Char
-import Data.Functor.Identity
-
 import Control.Monad.Reader
 
 type Parser a = ParsecT String () (ReaderT LogType IO) a
@@ -36,6 +16,7 @@ data Expression =
 
 intP :: Parser Int
 intP = many1 (satisfy isDigit)
+
 
 -- our old friend, the JSON ADT
 data JSON
