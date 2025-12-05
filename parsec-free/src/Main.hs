@@ -3,11 +3,13 @@ module Main (main) where
 import Data.Tree
 import Data.Char
 import Control.Monad.Reader
-import Text.Parsec hiding ((<|>), choice)
+import Text.Parsec hiding ((<|>), choice, sepBy, sepBy1, many, many1)
 import qualified Text.Parsec as P
 import Text.Parsec.Free.Log (LogType)
+import Data.Functor.Identity
 
-type Parser a = ParsecT String () (ReaderT LogType IO) a
+-- type Parser a = ParsecT String () (ReaderT LogType IO) a
+type Parser a = ParsecT String () Identity a
 
 (<|>) :: Parser a -> Parser a -> Parser a
 prsr1 <|> prsr2 = (P.<|>) (P.try prsr1) prsr2
@@ -15,17 +17,19 @@ prsr1 <|> prsr2 = (P.<|>) (P.try prsr1) prsr2
 choice :: [Parser a] -> Parser a
 choice = P.choice . fmap P.try
 
+sepBy :: Parser a -> Parser b -> Parser [a]
+sepBy body sep = P.sepBy1 body (P.try sep)
 
-data Expression 
-  = Literal Int
-  | Add Expression Expression
-  | Multiply Expression Expression
+sepBy1 :: Parser a -> Parser b -> Parser [a]
+sepBy1 body sep = P.sepBy1 body (P.try sep)
 
--- intP :: Parser Int
--- intP = many1 (satisfy isDigit)
+many :: Parser a -> Parser [a]
+many = P.many . try
+
+many1 :: Parser a -> Parser [a]
+many1 = P.many1 . try
 
 
--- our old friend, the JSON ADT
 data JSON
   = JNull
   | JBoolean Bool
@@ -36,11 +40,9 @@ data JSON
   | JObject [(String, JSON)]
   deriving (Eq, Show)
 
--- -- null parser
 jNullP :: Parser JSON
 jNullP = pure JNull <* string "null"
 
--- -- boolean parser
 jBooleanP :: Parser JSON
 jBooleanP =
   pure JBoolean <*> choice
@@ -48,22 +50,18 @@ jBooleanP =
   , pure False <* string "false"
   ]
 
--- sequence of digit characters parser
 digitsP :: Parser String
 digitsP = many1 digit
 
--- signed sequence of digit characters parser
 digitsWithSignP :: Num a => Parser (a, String)
 digitsWithSignP = pure (,)
           <*> choice [ pure (-1) <* char '-', pure 1 ]
           <*> many1 digit
 
--- integer parser
 jIntegerP :: Parser JSON
 jIntegerP = let mkInt (sign, digits) = JInteger $ sign * read digits
         in pure mkInt <*> digitsWithSignP
 
--- -- float parser
 jFloatP :: Parser JSON
 jFloatP = let mkFloat (sign, a) b =
                 JFloat $ sign * read (a <> "." <> b)
@@ -72,18 +70,15 @@ jFloatP = let mkFloat (sign, a) b =
              <* char '.'
              <*> many1 digit
 
--- -- helper parser for JSON string parser
 stringP :: Parser String
 stringP = between
       (char '"')
       (char '"')
       (many (satisfy (/= '"')))
 
--- -- string parser
 jStringP :: Parser JSON
 jStringP = pure JString <*> stringP
 
--- -- array parser
 jArray :: Parser JSON
 jArray = pure JArray
   <*> between
@@ -93,14 +88,12 @@ jArray = pure JArray
         *> char ','
         <* spaces))
 
--- helper parser for JSON object parser
 keyValueP :: Parser (String, JSON)
 keyValueP =
   pure (,)
   <*> stringP <* spaces <* char ':' <* spaces
   <*> jsonP
 
--- object parser
 jObjectP :: Parser JSON
 jObjectP = pure JObject
   <*> between
@@ -108,7 +101,6 @@ jObjectP = pure JObject
   (spaces <* char '}')
   (sepBy keyValueP (spaces *> char ',' <* spaces))
 
--- json value parser
 jsonP :: Parser JSON
 jsonP = choice
     [ jNullP,
@@ -120,10 +112,8 @@ jsonP = choice
       jObjectP
     ]
 
--- the parser that looks at the actual input string
 inputP :: Parser JSON
 inputP = jsonP <* eof
-
 
 main :: IO ()
 main = pure ()
