@@ -3,13 +3,18 @@ module Main (main) where
 import Data.Tree
 import Data.Char
 import Control.Monad.Reader
-import Text.Parsec
+import Text.Parsec hiding ((<|>), choice)
+import qualified Text.Parsec as P
 import Text.Parsec.Free.Log (LogType)
 
 type Parser a = ParsecT String () (ReaderT LogType IO) a
 
-main :: IO ()
-main = pure ()
+(<|>) :: Parser a -> Parser a -> Parser a
+prsr1 <|> prsr2 = (P.<|>) (P.try prsr1) prsr2
+
+choice :: [Parser a] -> Parser a
+choice = P.choice . fmap P.try
+
 
 data Expression 
   = Literal Int
@@ -118,3 +123,7 @@ jsonP = choice
 -- the parser that looks at the actual input string
 inputP :: Parser JSON
 inputP = jsonP <* eof
+
+
+main :: IO ()
+main = pure ()
